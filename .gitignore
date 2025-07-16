@@ -1,0 +1,7 @@
+__pycache__/
+user-service/.env
+*.pyc
+*.sqlite3
+venv/
+.idea/
+docker-compose.yml
