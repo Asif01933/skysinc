@@ -1,7 +1,6 @@
 from fastapi import FastAPI
-from app.routers import root
+from app.routers import auth
 
-app = FastAPI(title="User Service")
-app.include_router(root.router)
+app = FastAPI()
 
-#checking commit is okay or not
+app.include_router(auth.router, prefix="/auth", tags=["Authentication"])
