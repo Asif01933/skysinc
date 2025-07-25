@@ -1,7 +1,6 @@
-from fastapi import APIRouter
+from fastapi import FastAPI
+from app.routers import auth
 
-router = APIRouter()
+app = FastAPI()
 
-@router.get("/")
-def health_check():
-    return {"status": "User Service Running"}
+app.include_router(auth.router)
