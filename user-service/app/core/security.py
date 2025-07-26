@@ -1,6 +1,7 @@
 import os
 from dotenv import load_dotenv
 from datetime import datetime, timedelta
+from fastapi import HTTPException
 from jose import JWTError, jwt
 from passlib.context import CryptContext
 
@@ -30,6 +31,11 @@ def create_access_token(data: dict, expires_delta: timedelta = None):
 
 def decode_token(token: str):
     try:
-        return jwt.decode(token, JWT_SECRET, algorithms=[ALGORITHM])
+        payload = jwt.decode(token, JWT_SECRET, algorithms=[ALGORITHM])
+        user_id = payload.get("sub")
+        role = payload.get("role")
+        if user_id is None:
+            raise HTTPException(status_code=401, detail="Invalid token")
+        return {"user_id": int(user_id), "role": role}
     except JWTError:
-        return None
+        raise HTTPException(status_code=401, detail="Invalid token")
