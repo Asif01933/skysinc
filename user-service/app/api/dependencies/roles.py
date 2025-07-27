@@ -1,5 +1,5 @@
 from fastapi import Depends, HTTPException
-from app.dependencies.auth import get_current_user
+from app.api.dependencies.auth import get_current_user
 from app.db.models.user import User
 
 
