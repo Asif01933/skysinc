@@ -1,15 +1,10 @@
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker, Session
-import os
-from dotenv import load_dotenv
+from app.core.config import settings
 
-env = os.getenv("ENVIRONMENT", "dev")
-dotenv_path = ".env.test" if env == "test" else ".env"
-load_dotenv(dotenv_path)
 
-DATABASE_URL = os.getenv("DATABASE_URL")
 
-engine = create_engine(DATABASE_URL)
+engine = create_engine(settings.DATABASE_URL, future=True)
 SessionLocal = sessionmaker(bind=engine, autocommit=False, autoflush=False)
 
 
@@ -19,3 +14,5 @@ def get_db():
         yield db
     finally:
         db.close()
+
+
