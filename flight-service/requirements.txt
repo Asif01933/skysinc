@@ -9,4 +9,5 @@ passlib[bcrypt]
 pytest
 httpx 
 pytest-asyncio
-pydantic[email]
+pydantic<2.0
+
