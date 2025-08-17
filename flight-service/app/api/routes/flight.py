@@ -20,13 +20,22 @@ def create_flight(flight: FlightCreate, db: Session = Depends(get_db)):
 def search_flights(
     from_: str = Query(..., alias="from"),
     to: str = Query(...),
-    date: datetime = Query(...),
     db: Session = Depends(get_db)
 ):
     flights = db.query(Flight).filter(
-        Flight.departure_city.ilike(f"%{from_}%"),
-        Flight.arrival_city.ilike(f"%{to}%"),
-        Flight.departure_time >= date,
-        Flight.departure_time < date.replace(hour=23, minute=59, second=59)
+        Flight.origin.ilike(f"%{from_}%"),
+        Flight.destination.ilike(f"%{to}%")
+
     ).all()
+    if not flights:
+        raise HTTPException(status_code=404, detail="No flights available")
+    return flights
+
+
+
+@router.get("/flights/all", response_model=List[FlightResponse])
+def search_flights(
+    db: Session = Depends(get_db)
+):
+    flights = db.query(Flight).all()
     return flights

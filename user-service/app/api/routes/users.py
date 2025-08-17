@@ -32,3 +32,19 @@ def get_user_by_id(
         "email": user.email,
         "role": user.role
     }
+    
+@router.get("/users")
+def get_all_users(
+    db: Session = Depends(get_db),
+    
+):
+    users = db.query(User).all()
+    return [
+        {
+            "id": user.id,
+            "username": user.username,
+            "email": user.email,
+            "role": user.role
+        } for user in users
+    ]
+
