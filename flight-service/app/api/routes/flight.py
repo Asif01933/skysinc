@@ -6,6 +6,7 @@ from app.db.session import get_db
 from typing import List
 from datetime import datetime
 from app.core.redis import redis_client
+import json
 router = APIRouter()
 
 @router.post("/flights", response_model=FlightResponse)
@@ -23,18 +24,39 @@ async def search_flights(
     to: str = Query(...),
     db: Session = Depends(get_db)
 ):
-    cached = await redis_client.get(f"flights:{from_ + to}")
+    cache_key = f"flights:{from_}:{to}"
+
+   
+    cached = await redis_client.get(cache_key)
     if cached:
-        return cached
-    
+        return json.loads(cached)
+
+   
     flights = db.query(Flight).filter(
         Flight.origin.ilike(f"%{from_}%"),
         Flight.destination.ilike(f"%{to}%")
-
     ).all()
+
     if not flights:
         raise HTTPException(status_code=404, detail="No flights available")
-    return flights
+
+    flights_data = [
+        {
+            "id": f.id,
+            "origin": f.origin,
+            "destination": f.destination,
+            "price": f.price,
+            "departure_time": f.departure_time.isoformat() if f.departure_time else None,
+            "seats_available": f.seats_available
+        }
+        for f in flights
+    ]
+
+    
+    await redis_client.setex(cache_key, 600, json.dumps(flights_data))
+
+    return flights_data
+
 
 
 
