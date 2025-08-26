@@ -3,6 +3,7 @@ from datetime import datetime
 
 class BookingCreate(BaseModel):
     flight_id: int
+    user_id: int
 
 
 class BookingResponse(BaseModel):
