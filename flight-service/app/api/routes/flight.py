@@ -6,6 +6,7 @@ from app.db.session import get_db
 from typing import List
 from datetime import datetime
 from app.core.redis import redis_client
+from app.core.deps import get_current_user
 import json
 router = APIRouter()
 
@@ -62,7 +63,8 @@ async def search_flights(
 
 @router.get("/flights/all", response_model=List[FlightResponse])
 def search_flights(
-    db: Session = Depends(get_db)
+    db: Session = Depends(get_db),
+    current_user: dict = Depends(get_current_user),
 ):
     flights = db.query(Flight).all()
     return flights
